@@ -16,7 +16,8 @@ import world.World.Coordinate;
 public class OtherWorld {
 	//this first array is populated when making a guess
     public List<Coordinate> allShots = new ArrayList<>();
-    //these second two arrays are populated when a response is received
+    //these second three arrays are populated when a response is received
     public List<Coordinate> hits = new ArrayList<>();
     public List<Coordinate> misses = new ArrayList<>();
+    public List<Ship> shipsSunk = new ArrayList<>();
 }
