@@ -1,5 +1,8 @@
 package player;
 
+import world.World;
+import world.World.Coordinate;
+
 /**
  * This class defines the format of a guess
  *
@@ -17,5 +20,13 @@ public class Guess {
     @Override
     public String toString() {
         return "guesses/fires at row " + row + " column " + column + '.';
+    }
+    
+    public Coordinate createCoordinate(){
+    	World w = new World();
+    	Coordinate c = w.new Coordinate();
+    	c.row = this.row;
+    	c.column = this.column;
+    	return c;
     }
 }
