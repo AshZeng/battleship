@@ -94,14 +94,16 @@ public class RandomGuessPlayer implements Player{
             	stillLooking = false; // then stop looking
         }
         // build up a map of my opponent's world
-        opponantsWorld.shots.add(coordinate);
+        opponantsWorld.allShots.add(coordinate);
         return coordinate.createGuess();
     } // end of makeGuess()
 
 
     @Override
     public void update(Guess guess, Answer answer) {
+        //update after I have received a response from my shot fired
         // To be implemented.
+        
     } // end of update()
 
 
