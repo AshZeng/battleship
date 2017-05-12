@@ -7,6 +7,7 @@ import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import player.Guess;
 import ship.*;
 
@@ -19,17 +20,7 @@ import ship.*;
  * @author Youhan, Jeffrey
  */
 public class World {
-    // nested class for keeping the coordinates of ships or shots.
-    public class Coordinate {
-        public int row;
-        public int column;
-    }
 
-    // nested class for storing ship locations.
-    public class ShipLocation {
-        public Ship ship;
-        public ArrayList<Coordinate> coordinates = new ArrayList<>();
-    }
 
     // The size of grid.
     public int numRow;
@@ -262,5 +253,24 @@ public class World {
             // do nothing
         }
     } // end of drawShot()
+    
+    public class ShipLocation {
+    	public Ship ship;
+        public ArrayList<Coordinate> coordinates = new ArrayList<>();
+        public boolean sunk = false;
+    }
+    
+    public class Coordinate {
+    	public int row;
+        public int column;
+        public boolean hit = false;
+        
+        public Guess createGuess(){
+        	Guess g = new Guess();
+        	g.row = this.row;
+        	g.column = this.column;
+        	return g;
+        }
+    }
 
 } // end of class World
