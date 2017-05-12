@@ -35,6 +35,7 @@ public class World {
     // Ship locations and shot history.
     public ArrayList<ShipLocation> shipLocations = new ArrayList<>();
     public ArrayList<Coordinate> shots = new ArrayList<>();
+    public ArrayList<Guess> hitsToMyFleet = new ArrayList<>();
 
     // True if visualisation switch is on.
     boolean isVisual = false;

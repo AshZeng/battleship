@@ -1,10 +1,5 @@
 package player;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
-
-import ship.Ship;
 import world.OtherWorld;
 import world.World;
 import world.World.Coordinate;
@@ -23,13 +18,12 @@ public class RandomGuessPlayer implements Player{
     private static final int NUMBER_OF_VULNERABLE_COORDINATES = 17;
     private World myWorld;
     private OtherWorld opponantsWorld;
-    private ArrayList<Guess> hitsToMyFleet;
+    
 
     @Override
     public void initialisePlayer(World world) {
         this.myWorld = world;
         this.opponantsWorld = new OtherWorld();
-        this.hitsToMyFleet = new ArrayList<>();
     } // end of initialisePlayer()
     
 
@@ -39,7 +33,7 @@ public class RandomGuessPlayer implements Player{
         //check if the guess hits the fleet
         if(guessIsAccurate(guess, answer)){
         	answer.isHit = true;
-            hitsToMyFleet.add(guess);
+            myWorld.hitsToMyFleet.add(guess);
         }
         else
         	answer.isHit = false;
@@ -109,7 +103,7 @@ public class RandomGuessPlayer implements Player{
 
     @Override
     public boolean noRemainingShips() {
-        return hitsToMyFleet.size() >= NUMBER_OF_VULNERABLE_COORDINATES;
+        return myWorld.hitsToMyFleet.size() >= NUMBER_OF_VULNERABLE_COORDINATES;
     } // end of noRemainingShips()
 
 } // end of class RandomGuessPlayer
