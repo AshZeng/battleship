@@ -17,13 +17,13 @@ public class RandomGuessPlayer implements Player{
 
     private static final int NUMBER_OF_VULNERABLE_COORDINATES = 17;
     private World myWorld;
-    private OtherWorld opponantsWorld;
+    private OtherWorld opponentsWorld;
     
 
     @Override
     public void initialisePlayer(World world) {
         this.myWorld = world;
-        this.opponantsWorld = new OtherWorld();
+        this.opponentsWorld = new OtherWorld();
     } // end of initialisePlayer()
     
 
@@ -64,9 +64,8 @@ public class RandomGuessPlayer implements Player{
 		// Iterate over the coordinates of the ship
 		for(Coordinate c: ship.coordinates) {
 			// if at least one part of ship hasn't been hit
-			if(c.hit == false){ 
+			if(c.hit == false)
 				ship.sunk = false;
-			}
 		}
 		return ship.sunk;
 	}
@@ -88,16 +87,21 @@ public class RandomGuessPlayer implements Player{
             	stillLooking = false; // then stop looking
         }
         // build up a map of my opponent's world
-        opponantsWorld.allShots.add(coordinate);
+        opponentsWorld.allShots.add(coordinate);
         return coordinate.createGuess();
     } // end of makeGuess()
 
 
     @Override
     public void update(Guess guess, Answer answer) {
-        //update after I have received a response from my shot fired
-        // To be implemented.
-        
+        //updating my opponents world 
+        //after I have received a response from my shot fired
+    	if(answer.isHit)
+    		opponentsWorld.hits.add(guess.createCoordinate());
+    	else
+    		opponentsWorld.misses.add(guess.createCoordinate());
+    	if(answer.shipSunk != null)
+    		opponentsWorld.shipsSunk.add(answer.shipSunk);
     } // end of update()
 
 

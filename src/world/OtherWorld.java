@@ -3,6 +3,7 @@ package world;
 import java.util.ArrayList;
 import java.util.List;
 
+import ship.Ship;
 import world.World.Coordinate;
 
 /**
