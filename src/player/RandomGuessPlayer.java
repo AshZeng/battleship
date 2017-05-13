@@ -46,7 +46,7 @@ public class RandomGuessPlayer implements Player{
 		for(ShipLocation ship : myWorld.shipLocations) {
 			// Iterate over the coordinates of each ship
 			for(Coordinate c: ship.coordinates) {
-				if(c.createGuess() == guess){ //guess is a hit
+				if(c.sameAs(guess)){ //guess is a hit
 					c.hit = true;
 					// if ship is sunk altogether
 					if(updateShipSunkStatus(ship))
@@ -80,10 +80,10 @@ public class RandomGuessPlayer implements Player{
         // create boolean to keep looping while looking for new coordinate
         boolean stillLooking = true;
         while(stillLooking){ // generate x and y values
-        	coordinate.column = random.nextInt() * 100 % myWorld.numColumn;
-        	coordinate.row = random.nextInt() * 100 % myWorld.numRow;
+        	coordinate.column = random.nextInt(100) % myWorld.numColumn;
+        	coordinate.row = random.nextInt(100) % myWorld.numRow;
             // if coordinate not in the list of previous guesses
-            if(!myWorld.shots.contains(coordinate))
+            if(coordinate.isNotContainedIn(myWorld.shots))
             	stillLooking = false; // then stop looking
         }
         // build up a map of my opponent's world
