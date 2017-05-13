@@ -3,6 +3,7 @@ package world;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -271,6 +272,21 @@ public class World {
         	g.row = this.row;
         	g.column = this.column;
         	return g;
+        }
+        
+        public boolean isNotContainedIn(List<Coordinate> array){
+        	for(Coordinate c: array){
+        		if(this.row == c.row && this.column == c.column)
+        			return false;
+        	}
+        	return true;
+        }
+        
+        public boolean sameAs(Guess guess){
+        	if(this.row == guess.row && this.column == guess.column)
+        		return true;
+        	else
+        		return false;
         }
     }
 
