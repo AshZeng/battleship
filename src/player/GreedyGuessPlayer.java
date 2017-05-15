@@ -1,5 +1,10 @@
 package player;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import world.OtherWorld;
+import world.World;
 
 /**
  * Greedy guess player (task B).
@@ -8,11 +13,32 @@ package player;
  * @author Youhan, Jeffrey
  */
 public class GreedyGuessPlayer extends Guesser implements Player{
+	
+	public List<Guess> checkerBoardGuesses;
+	
+	@Override
+    public void initialisePlayer(World world) {
+        this.myWorld = world;
+        this.opponentsWorld = new OtherWorld();
+        this.hitsToMyFleet = new ArrayList<>();
+        this.checkerBoardGuesses = new ArrayList<>();
+        enumerateGuesses(checkerBoardGuesses);
+    } // end of initialisePlayer()
+	
+	private void enumerateGuesses(List<Guess> list) {
+		for(int row = 0; row < myWorld.numRow; ++row){
+			for(int col = row%2; col < myWorld.numColumn; col+=2){
+				Guess g = new Guess();
+				g.row = row;
+				g.column = col;
+				list.add(g);
+			}
+		}
+	}
 
     @Override
     public Guess makeGuess() {
         // ** Hunting mode **
-        // Build an array of allowed guess
         // Allowed guesses are any that are on the checker board pattern
         // 
         // ** Targeting greedy mode **
