@@ -3,12 +3,10 @@ package world;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import player.Guess;
 import ship.*;
 
@@ -21,7 +19,17 @@ import ship.*;
  * @author Youhan, Jeffrey
  */
 public class World {
+    // nested class for keeping the coordinates of ships or shots.
+    public class Coordinate {
+        public int row;
+        public int column;
+    }
 
+    // nested class for storing ship locations.
+    public class ShipLocation {
+        public Ship ship;
+        public ArrayList<Coordinate> coordinates = new ArrayList<>();
+    }
 
     // The size of grid.
     public int numRow;
@@ -36,7 +44,6 @@ public class World {
     // Ship locations and shot history.
     public ArrayList<ShipLocation> shipLocations = new ArrayList<>();
     public ArrayList<Coordinate> shots = new ArrayList<>();
-    public ArrayList<Guess> hitsToMyFleet = new ArrayList<>();
 
     // True if visualisation switch is on.
     boolean isVisual = false;
@@ -255,39 +262,5 @@ public class World {
             // do nothing
         }
     } // end of drawShot()
-    
-    public class ShipLocation {
-    	public Ship ship;
-        public ArrayList<Coordinate> coordinates = new ArrayList<>();
-        public boolean sunk = false;
-    }
-    
-    public class Coordinate {
-    	public int row;
-        public int column;
-        public boolean hit = false;
-        
-        public Guess createGuess(){
-        	Guess g = new Guess();
-        	g.row = this.row;
-        	g.column = this.column;
-        	return g;
-        }
-        
-        public boolean isNotContainedIn(List<Coordinate> array){
-        	for(Coordinate c: array){
-        		if(this.row == c.row && this.column == c.column)
-        			return false;
-        	}
-        	return true;
-        }
-        
-        public boolean sameAs(Guess guess){
-        	if(this.row == guess.row && this.column == guess.column)
-        		return true;
-        	else
-        		return false;
-        }
-    }
 
 } // end of class World

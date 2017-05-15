@@ -5,6 +5,8 @@ import world.World;
 import world.World.Coordinate;
 import world.World.ShipLocation;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -18,6 +20,7 @@ public class RandomGuessPlayer implements Player{
     private static final int NUMBER_OF_VULNERABLE_COORDINATES = 17;
     private World myWorld;
     private OtherWorld opponentsWorld;
+    public List<Guess> hitsToMyFleet = new ArrayList<>();
     
 
     @Override
@@ -33,7 +36,7 @@ public class RandomGuessPlayer implements Player{
         //check if the guess hits the fleet
         if(guessIsAccurate(guess, answer)){
         	answer.isHit = true;
-            myWorld.hitsToMyFleet.add(guess);
+            hitsToMyFleet.add(guess);
         }
         else
         	answer.isHit = false;
@@ -43,11 +46,10 @@ public class RandomGuessPlayer implements Player{
 
     private boolean guessIsAccurate(Guess guess, Answer answer) {
     	// Iterate through ships
-		for(ShipLocation ship : myWorld.shipLocations) {
+      for(ShipLocation ship : myWorld.shipLocations) {
 			// Iterate over the coordinates of each ship
-			for(Coordinate c: ship.coordinates) {
-				if(c.sameAs(guess)){ //guess is a hit
-					c.hit = true;
+         for(Coordinate c: ship.coordinates) {
+				if(sameAs(c, guess)){ //guess is a hit
 					// if ship is sunk altogether
 					if(updateShipSunkStatus(ship))
 						answer.shipSunk = ship.ship;
@@ -60,14 +62,14 @@ public class RandomGuessPlayer implements Player{
 
 
 	private boolean updateShipSunkStatus(ShipLocation ship) {
-		ship.sunk = true;
+		boolean shipSunk = true;
 		// Iterate over the coordinates of the ship
 		for(Coordinate c: ship.coordinates) {
 			// if at least one part of ship hasn't been hit
-			if(c.hit == false)
-				ship.sunk = false;
+			if(notContainedInGuessList(c, hitsToMyFleet))
+				shipSunk = false;
 		}
-		return ship.sunk;
+		return shipSunk;
 	}
 
 
@@ -83,12 +85,12 @@ public class RandomGuessPlayer implements Player{
         	coordinate.column = random.nextInt(100) % myWorld.numColumn;
         	coordinate.row = random.nextInt(100) % myWorld.numRow;
             // if coordinate not in the list of previous guesses
-            if(coordinate.isNotContainedIn(opponentsWorld.shots))
+            if(notContainedInCoordinateList(coordinate, opponentsWorld.shots))
             	stillLooking = false; // then stop looking
         }
         // build up a map of my opponent's world
         opponentsWorld.shots.add(coordinate);
-        return coordinate.createGuess();
+        return createGuess(coordinate);
     } // end of makeGuess()
 
 
@@ -107,7 +109,37 @@ public class RandomGuessPlayer implements Player{
 
     @Override
     public boolean noRemainingShips() {
-        return myWorld.hitsToMyFleet.size() >= NUMBER_OF_VULNERABLE_COORDINATES;
+        return hitsToMyFleet.size() >= NUMBER_OF_VULNERABLE_COORDINATES;
     } // end of noRemainingShips()
+
+    // Start helper methods --->
+
+    public Guess createGuess(Coordinate c){
+        Guess g = new Guess();
+        g.row = c.row;
+        g.column = c.column;
+        return g;
+    }
+
+    public boolean notContainedInCoordinateList(Coordinate coordinate, List<Coordinate> array){
+        for(Coordinate c: array){
+            if(coordinate.row == c.row && coordinate.column == c.column)
+                return false;
+        }
+        return true;
+    }
+    
+    public boolean notContainedInGuessList(Coordinate coordinate, List<Guess> array){
+    	Guess coordinateGuess = createGuess(coordinate);
+        for(Guess g: array){
+            if(coordinateGuess.row == g.row && coordinateGuess.column == g.column)
+                return false;
+        }
+        return true;
+    }
+
+    public boolean sameAs(Coordinate c, Guess guess){
+        return c.row == guess.row && c.column == guess.column;
+    }
 
 } // end of class RandomGuessPlayer
