@@ -20,17 +20,32 @@ public class RandomGuessPlayer implements Player{
     private static final int NUMBER_OF_VULNERABLE_COORDINATES = 17;
     private World myWorld;
     private OtherWorld opponentsWorld;
-    public List<Guess> hitsToMyFleet = new ArrayList<>();
+    public List<Guess> hitsToMyFleet;
+    public List<Guess> allAvailableGuesses; 
     
 
     @Override
     public void initialisePlayer(World world) {
         this.myWorld = world;
         this.opponentsWorld = new OtherWorld();
+        this.hitsToMyFleet = new ArrayList<>();
+        this.allAvailableGuesses = new ArrayList<>();
+        enumerateGuesses(allAvailableGuesses);
     } // end of initialisePlayer()
     
 
-    @Override
+    private void enumerateGuesses(List<Guess> list) {
+		for(int row = 0; row < myWorld.numRow; ++row){
+			for(int col = 0; col < myWorld.numColumn; ++col){
+				Guess g = new Guess();
+				g.row = row;
+				g.column = col;
+				list.add(g);
+			}
+		}
+	}
+
+	@Override
     public Answer getAnswer(Guess guess) {
         Answer answer = new Answer();
         //check if the guess hits the fleet
@@ -99,9 +114,9 @@ public class RandomGuessPlayer implements Player{
         //updating my opponents world 
         //after I have received a response from my shot fired
     	if(answer.isHit)
-    		opponentsWorld.hits.add(guess.createCoordinate());
+    		opponentsWorld.hits.add(createCoordinate(guess));
     	else
-    		opponentsWorld.misses.add(guess.createCoordinate());
+    		opponentsWorld.misses.add(createCoordinate(guess));
     	if(answer.shipSunk != null)
     		opponentsWorld.shipsSunk.add(answer.shipSunk);
     } // end of update()
@@ -119,6 +134,13 @@ public class RandomGuessPlayer implements Player{
         g.row = c.row;
         g.column = c.column;
         return g;
+    }
+    
+    public Coordinate createCoordinate(Guess g){
+    	Coordinate c = myWorld.new Coordinate();
+    	c.row = g.row;
+    	c.column = g.column;
+    	return c;
     }
 
     public boolean notContainedInCoordinateList(Coordinate coordinate, List<Coordinate> array){
