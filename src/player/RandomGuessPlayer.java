@@ -90,22 +90,10 @@ public class RandomGuessPlayer implements Player{
 
 	@Override
     public Guess makeGuess() {
-        // declare a random object for generating numbers;
-    	Random random = new Random();
-        // create coordinate object for comparing with previous guesses
-        Coordinate coordinate = myWorld.new Coordinate();
-        // create boolean to keep looping while looking for new coordinate
-        boolean stillLooking = true;
-        while(stillLooking){ // generate x and y values
-        	coordinate.column = random.nextInt(100) % myWorld.numColumn;
-        	coordinate.row = random.nextInt(100) % myWorld.numRow;
-            // if coordinate not in the list of previous guesses
-            if(notContainedInCoordinateList(coordinate, opponentsWorld.shots))
-            	stillLooking = false; // then stop looking
-        }
-        // build up a map of my opponent's world
-        opponentsWorld.shots.add(coordinate);
-        return createGuess(coordinate);
+		//get a random index and pop a guess object from the list
+		Random random = new Random();
+		int index = random.nextInt(1000) % allAvailableGuesses.size();
+		return allAvailableGuesses.remove(index);
     } // end of makeGuess()
 
 
