@@ -83,11 +83,11 @@ public class RandomGuessPlayer implements Player{
         	coordinate.column = random.nextInt(100) % myWorld.numColumn;
         	coordinate.row = random.nextInt(100) % myWorld.numRow;
             // if coordinate not in the list of previous guesses
-            if(coordinate.isNotContainedIn(myWorld.shots))
+            if(coordinate.isNotContainedIn(opponentsWorld.shots))
             	stillLooking = false; // then stop looking
         }
         // build up a map of my opponent's world
-        opponentsWorld.allShots.add(coordinate);
+        opponentsWorld.shots.add(coordinate);
         return coordinate.createGuess();
     } // end of makeGuess()
 
