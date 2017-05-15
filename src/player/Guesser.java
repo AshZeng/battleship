@@ -1,6 +1,6 @@
 package player;
 
-import java.util.ArrayList;
+
 import java.util.List;
 
 import world.OtherWorld;
@@ -14,27 +14,6 @@ public abstract class Guesser implements Player{
     public World myWorld;
     public OtherWorld opponentsWorld;
     public List<Guess> hitsToMyFleet;
-    public List<Guess> allAvailableGuesses; 
-
-    @Override
-    public void initialisePlayer(World world) {
-        this.myWorld = world;
-        this.opponentsWorld = new OtherWorld();
-        this.hitsToMyFleet = new ArrayList<>();
-        this.allAvailableGuesses = new ArrayList<>();
-        enumerateGuesses(allAvailableGuesses);
-    } // end of initialisePlayer()
-
-    private void enumerateGuesses(List<Guess> list) {
-		for(int row = 0; row < myWorld.numRow; ++row){
-			for(int col = 0; col < myWorld.numColumn; ++col){
-				Guess g = new Guess();
-				g.row = row;
-				g.column = col;
-				list.add(g);
-			}
-		}
-	}
 
 	@Override
     public Answer getAnswer(Guess guess) {
