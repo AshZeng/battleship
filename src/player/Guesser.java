@@ -11,8 +11,8 @@ import world.World.ShipLocation;
 public abstract class Guesser implements Player{
 	
 	private static final int NUMBER_OF_VULNERABLE_COORDINATES = 17;
-    private World myWorld;
-    private OtherWorld opponentsWorld;
+    public World myWorld;
+    public OtherWorld opponentsWorld;
     public List<Guess> hitsToMyFleet;
     public List<Guess> allAvailableGuesses; 
 

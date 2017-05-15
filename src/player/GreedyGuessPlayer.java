@@ -1,7 +1,5 @@
 package player;
 
-import java.util.Scanner;
-import world.World;
 
 /**
  * Greedy guess player (task B).
@@ -9,21 +7,7 @@ import world.World;
  *
  * @author Youhan, Jeffrey
  */
-public class GreedyGuessPlayer  implements Player{
-
-    @Override
-    public void initialisePlayer(World world) {
-        // To be implemented.
-    } // end of initialisePlayer()
-
-    @Override
-    public Answer getAnswer(Guess guess) {
-        // To be implemented.
-
-        // dummy return
-        return null;
-    } // end of getAnswer()
-
+public class GreedyGuessPlayer extends Guesser implements Player{
 
     @Override
     public Guess makeGuess() {
@@ -45,19 +29,5 @@ public class GreedyGuessPlayer  implements Player{
         return null;
     } // end of makeGuess()
 
-
-    @Override
-    public void update(Guess guess, Answer answer) {
-        // To be implemented.
-    } // end of update()
-
-
-    @Override
-    public boolean noRemainingShips() {
-        // To be implemented.
-
-        // dummy return
-        return true;
-    } // end of noRemainingShips()
 
 } // end of class GreedyGuessPlayer
