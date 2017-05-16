@@ -1,6 +1,7 @@
 package world;
 
 import java.util.ArrayList;
+import world.World.Coordinate;
 
 /* 
  * Cams Class to store the state of the opponents world
@@ -8,12 +9,8 @@ import java.util.ArrayList;
 
 public class OppWorld {
 	
-	// Need to copy this class here to allow creation of new coordinates
-    public class Coordinate {
-        public int row;
-        public int column;
-    }
-    
+	private World world = new World();
+	
 	enum cellState { Untested, Possible, Hit, Miss }; 
 	/* 
 	 * NOTE although there is a cell state for Possible, this is used to simplify
@@ -80,7 +77,7 @@ public class OppWorld {
 			// If the cell is untested, it needs to become a "possible"
 			case Untested:
 			{
-				Coordinate temp = new Coordinate();
+				Coordinate temp = world.new Coordinate();
 				temp.row = row;
 				temp.column = column;
 				
