@@ -26,11 +26,17 @@ public class OppWorld {
 	private int numRows;
 	private int numColumns;
 	
-	public boolean setupWorld( int numRow, int numColumn )
+	// Constructor Class
+	public OppWorld( int numRow, int numColumn )
 	{
 		oppWorld = new cellState[numRow][numColumn];
 		
-		return false;
+		// Initialize ALL cells to untested
+		for ( int j = 0; j < numRows; j++ )
+		{
+			for ( int i = 0; i < numColumns; i++ )
+				oppWorld[j][i] = cellState.Untested;
+		}
 	}
 
 	// Called from the player class, to update the state of the opponents world
@@ -52,25 +58,25 @@ public class OppWorld {
 		// Check Up
 		temp = row - 1;
 		if ( temp >= 0 )
-			checkCell( temp, column );
+			checkCellUntested( temp, column );
 		
 		// Check Down
 		temp = row + 1;
 		if ( temp < numRows )
-			checkCell( temp, column );
+			checkCellUntested( temp, column );
 		
 		// Check Right
 		temp = column + 1;
 		if ( temp < numColumns )
-			checkCell( row, temp );
+			checkCellUntested( row, temp );
 		
 		// Check Left
 		temp = column + 1;
 		if ( temp >= 0 )
-			checkCell( row, temp );	
+			checkCellUntested( row, temp );	
 	}
 	
-	private void checkCell( int row, int column )
+	private void checkCellUntested( int row, int column )
 	{
 		switch( oppWorld[row][column] )
 		{
@@ -88,5 +94,4 @@ public class OppWorld {
 				return;
 		}
 	}
-	
 }
