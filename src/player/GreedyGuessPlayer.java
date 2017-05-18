@@ -2,9 +2,12 @@ package player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
-import world.OtherWorld;
+import world.OppWorld;
+//import world.OtherWorld;
 import world.World;
+import world.World.Coordinate;
 
 /**
  * Greedy guess player (task B).
@@ -19,7 +22,7 @@ public class GreedyGuessPlayer extends Guesser implements Player{
 	@Override
     public void initialisePlayer(World world) {
         this.myWorld = world;
-        this.opponentsWorld = new OtherWorld();
+        this.opponentsWorld = new OppWorld( world.numRow, world.numColumn, true );
         this.hitsToMyFleet = new ArrayList<>();
         this.checkerBoardGuesses = new ArrayList<>();
         enumerateGuesses(checkerBoardGuesses);
@@ -37,23 +40,37 @@ public class GreedyGuessPlayer extends Guesser implements Player{
 	}
 
     @Override
-    public Guess makeGuess() {
+    public Guess makeGuess() {    	
+    	// ** Targeting greedy mode **
+    	if ( opponentsWorld.possibleTargets.size() > 0 )
+    	{    		
+			Guess g = new Guess();
+			Coordinate tempCoord = myWorld.new Coordinate();
+			tempCoord = opponentsWorld.possibleTargets.remove(0);
+
+			g.row = tempCoord.row;
+			g.column = tempCoord.column;
+			
+    		/*
+    		 *  Check if this possible target is in the checkBoardGuesses list
+    		 *  This is to avoid duplicate guesses
+    		 */
+			Guess tempGuess = new Guess();
+			for ( int i = 0; i < checkerBoardGuesses.size(); i++ ) 
+			{
+				tempGuess = checkerBoardGuesses.get(i);
+				if ( ( tempGuess.row == g.row ) && ( tempGuess.column == g.column ) )
+				{
+					checkerBoardGuesses.remove(i);
+					i = checkerBoardGuesses.size();	// TO EXIT LOOP
+				}
+			}
+			return g;
+    	}
+    	
         // ** Hunting mode **
-        // Allowed guesses are any that are on the checker board pattern
-        // 
-        // ** Targeting greedy mode **
-        // Check one square in each direction
-        // if notYetFiredUpon(), then fire
-        // Recursively call that direction when a hit is found
-        // On return from the Recursive calls, if(shipNotYetSunk)
-        // then guessInOppositeDirection()
-        
-
-        // To be implemented.
-
-        // dummy return
-        return null;
+    	Random random = new Random();
+		int index = random.nextInt(1000) % checkerBoardGuesses.size();
+		return checkerBoardGuesses.remove(index);
     } // end of makeGuess()
-
-
 } // end of class GreedyGuessPlayer
