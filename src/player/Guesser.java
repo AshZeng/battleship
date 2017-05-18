@@ -1,10 +1,11 @@
 package player;
 
-
 import java.util.List;
 
-import world.OtherWorld;
+import world.OppWorld;
+//import world.OtherWorld;
 import world.World;
+import world.OppWorld.cellState;
 import world.World.Coordinate;
 import world.World.ShipLocation;
 
@@ -12,7 +13,8 @@ public abstract class Guesser implements Player{
 	
 	private static final int NUMBER_OF_VULNERABLE_COORDINATES = 17;
     public World myWorld;
-    public OtherWorld opponentsWorld;
+//    public OtherWorld opponentsWorld;
+    public OppWorld opponentsWorld;
     public List<Guess> hitsToMyFleet;
 
 	@Override
@@ -55,17 +57,13 @@ public abstract class Guesser implements Player{
 		return shipSunk;
 	}
 	
-    @Override
-    public void update(Guess guess, Answer answer) {
-        //updating my opponents world 
-        //after I have received a response from my shot fired
-    	if(answer.isHit)
-    		opponentsWorld.hits.add(createCoordinate(guess));
-    	else
-    		opponentsWorld.misses.add(createCoordinate(guess));
-    	if(answer.shipSunk != null)
-    		opponentsWorld.shipsSunk.add(answer.shipSunk);
-    } // end of update()
+	@Override
+	public void update(Guess guess, Answer answer) {
+		if(answer.isHit)
+			opponentsWorld.updateCell ( cellState.Hit, guess.row, guess.column );
+		else
+			opponentsWorld.updateCell ( cellState.Miss, guess.row, guess.column );
+	}
 
     @Override
     public boolean noRemainingShips() {
@@ -107,5 +105,4 @@ public abstract class Guesser implements Player{
     public boolean sameAs(Coordinate c, Guess guess){
         return c.row == guess.row && c.column == guess.column;
     }
-
 }
