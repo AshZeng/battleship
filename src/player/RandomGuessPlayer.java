@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import world.OtherWorld;
+import world.OppWorld;
+//import world.OtherWorld;
 import world.World;
 
 /**
@@ -20,7 +21,7 @@ public class RandomGuessPlayer extends Guesser implements Player{
 	@Override
     public void initialisePlayer(World world) {
         this.myWorld = world;
-        this.opponentsWorld = new OtherWorld();
+        this.opponentsWorld = new OppWorld( world.numRow, world.numColumn, false );
         this.hitsToMyFleet = new ArrayList<>();
         this.allAvailableGuesses = new ArrayList<>();
         enumerateGuesses(allAvailableGuesses);
@@ -44,7 +45,4 @@ public class RandomGuessPlayer extends Guesser implements Player{
 		int index = random.nextInt(1000) % allAvailableGuesses.size();
 		return allAvailableGuesses.remove(index);
     } // end of makeGuess()
-
-
-
 } // end of class RandomGuessPlayer
