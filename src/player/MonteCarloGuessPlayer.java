@@ -20,7 +20,8 @@ public class MonteCarloGuessPlayer extends Guesser implements Player{
 	
 	public static final int BOARD_EDGE = 0;
 	public static final int CURRENT_CONFIGURATION = 1;
-	public static final int CURRENT_CELL = 1;
+	public static final int INCLUSIVE_EXTRA_CELL = 1;
+	
 	@Override
     public void initialisePlayer(World world) {
         this.myWorld = world;
@@ -60,7 +61,7 @@ public class MonteCarloGuessPlayer extends Guesser implements Player{
     
     public int getShipConfigurationCount(int coordinate, int shipSize, int rangeMin, int rangeMax) {
     	// reduce the range to be the reach of the ship
-    	int newRangeMin = max(rangeMin, CURRENT_CELL + coordinate - shipSize);
+    	int newRangeMin = max(rangeMin, coordinate - shipSize + INCLUSIVE_EXTRA_CELL);
     	int newRangeMax = min(rangeMax, coordinate + shipSize);
     	int range = newRangeMax - newRangeMin;
     	return CURRENT_CONFIGURATION + range - shipSize;
@@ -69,10 +70,19 @@ public class MonteCarloGuessPlayer extends Guesser implements Player{
 
 	@Override
     public Guess makeGuess() {
-        // To be implemented.
-
-        // dummy return
-        return null;
+        int highestCount = 0;
+        Guess g = new Guess();
+        for(int y = 0; y < opponentsWorld.numRows; ++y){ //for each row
+        	for(int x = 0; x < opponentsWorld.numColumns; ++x){ // for each column
+        		// if it is a higher number, make it the new guess
+        		if(opponentsWorld.total.ShipConfigurationCounts[y][x] > highestCount){
+        			highestCount = opponentsWorld.total.ShipConfigurationCounts[y][x];
+        			g.column = x;
+        			g.row = y;
+        		}
+        	}
+        }
+        return g;
     } // end of makeGuess()
     
     @Override
@@ -83,9 +93,9 @@ public class MonteCarloGuessPlayer extends Guesser implements Player{
 			opponentsWorld.updateCell ( cellState.Miss, guess.row, guess.column );
 	}
     
-    // ORDER OF OPERATIONS
-    // make a guess (by taking the highest value)
-    // update opponents board in the oppWorld array (done)
+    // IDEAS ON ORDER OF OPERATIONS
+    // make a guess
+    // update opponents board in the oppWorld array
     // --> need to add to update(), change each Count array as well
     
     // updateCount() -->
@@ -98,9 +108,9 @@ public class MonteCarloGuessPlayer extends Guesser implements Player{
     // (excluding boundaries and the coordinate fired at) 
     //
     // for each array in shipCounters
-    // add a -1 where the shot was made
-    // calculate coordinates inside the row range
-    // calculate coordinates inside the column range
+    // change to -1 where the shot was made
+    // calculate count for coordinates inside the row range
+    // calculate count for coordinates inside the column range
     // 		(for each coordinate, set to zero first, and add recalculated value to the totalCount)
 
 
