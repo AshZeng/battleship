@@ -1,6 +1,9 @@
 package world;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import world.ConfigurationCounter;
 import world.World.Coordinate;
 
 /* 
@@ -20,12 +23,33 @@ public class OppWorld {
 	 */
 	public ArrayList<Coordinate> possibleTargets = new ArrayList<>();
 	
-	// 2d Array representing the opponents world
-	cellState[][] oppWorld = null; 
+	// 2d Arrays representing the opponents world
+	public cellState[][] oppWorld = null; 
+	public List<ConfigurationCounter> ShipCounters = new ArrayList<>();
+	public ConfigurationCounter total;
+	public ConfigurationCounter size5AircraftCarrier;
+	public ConfigurationCounter size4Battleship;
+	public ConfigurationCounter size3Submarine;
+	public ConfigurationCounter size3Cruiser;
+	public ConfigurationCounter size2Destroyer;
 	
-	// Private copy of the world boundaries
-	private int numRows;
-	private int numColumns;
+	public void initialiseShipCounters(){
+		total = new ConfigurationCounter(numRows, numColumns, 0);
+		size5AircraftCarrier = new ConfigurationCounter(numRows, numColumns, 5);
+		size4Battleship = new ConfigurationCounter(numRows, numColumns, 4);
+		size3Submarine = new ConfigurationCounter(numRows, numColumns, 3);
+		size3Cruiser = new ConfigurationCounter(numRows, numColumns, 3);
+		size2Destroyer = new ConfigurationCounter(numRows, numColumns, 2);
+		ShipCounters.add(size5AircraftCarrier);
+		ShipCounters.add(size4Battleship);
+		ShipCounters.add(size3Submarine);
+		ShipCounters.add(size3Cruiser);
+		ShipCounters.add(size2Destroyer);
+	}
+	
+	// Copy of the world boundaries
+	public int numRows;
+	public int numColumns;
 	
 	// Constructor Class
 	public OppWorld( int numRow, int numColumn, boolean checkPossibles )
@@ -105,8 +129,6 @@ public class OppWorld {
     	
     	printLine();
     	
-    	
-//		for ( int j = 0; j < numRows; j++ )
     	for ( int j = numRows - 1; j >= 0 ; j-- )
 		{
 			System.out.print( j + "|");
