@@ -29,10 +29,10 @@ public class MonteCarloGuessPlayer extends Guesser implements Player{
         this.hitsToMyFleet = new ArrayList<>();
         this.opponentsWorld.initialiseShipCounters();
         initialiseTotalCountToZero(opponentsWorld.total);
-        countAllConfigurations(opponentsWorld.ShipCounters, opponentsWorld.total);
+        setupAllConfigurations(opponentsWorld.ShipCounters, opponentsWorld.total);
     } // end of initialisePlayer()
 	
-	private void initialiseTotalCountToZero(ConfigurationCounter board){
+	public void initialiseTotalCountToZero(ConfigurationCounter board){
 		for(int y = 0; y < board.rows; ++y){ // for each row
 			for(int x = 0; x < board.columns; ++x){ // for each column
 				board.ShipConfigurationCounts[y][x] = 0;
@@ -40,7 +40,7 @@ public class MonteCarloGuessPlayer extends Guesser implements Player{
 		}
 	}
     
-    private void countAllConfigurations(List<ConfigurationCounter> shipCounters, ConfigurationCounter total) {
+	public void setupAllConfigurations(List<ConfigurationCounter> shipCounters, ConfigurationCounter total) {
     	for(ConfigurationCounter board: shipCounters){ // for each counter
     		for(int y = 0; y < board.rows; ++y){ // for each row
     			for(int x = 0; x < board.columns; ++x){ // for each cell
@@ -73,10 +73,15 @@ public class MonteCarloGuessPlayer extends Guesser implements Player{
 
 	@Override
     public Guess makeGuess() {
+		//Print the board for Debug
+		opponentsWorld.printBoard(opponentsWorld.total.ShipConfigurationCounts);
 		//if there are hits and not all surrounding cells have been fired at
 		// **Targeting Mode
-		if (opponentsWorld.possibleTargets.size() > 0)
-			return this.createGuess(opponentsWorld.possibleTargets.remove(0));
+		if (opponentsWorld.possibleTargets.size() > 0){
+			Guess gs = this.createGuess(opponentsWorld.possibleTargets.remove(0));
+			System.out.println("Making a guess targeted at: " + gs.row + ", " + gs.column);
+			return gs;
+		}
 		// **Hunting Mode**
         int highestCount = 0;
         Guess g = new Guess();
@@ -90,6 +95,7 @@ public class MonteCarloGuessPlayer extends Guesser implements Player{
         		}
         	}
         }
+        System.out.println("Making a hunting guess at: " + g.row + ", " + g.column);
         return g;
     } // end of makeGuess()
     
@@ -99,51 +105,78 @@ public class MonteCarloGuessPlayer extends Guesser implements Player{
 			opponentsWorld.updateCell ( cellState.Hit, guess.row, guess.column );
 		else
 			opponentsWorld.updateCell ( cellState.Miss, guess.row, guess.column );
-		
-		//Set the state of the cell that was fired at to -1
-		opponentsWorld.total.ShipConfigurationCounts[guess.row][guess.column] = -1;
 		//Find range between shot cell and obstacles
 		int rangeMinRow = getRangeMinRow(guess);
 		int rangeMaxRow = getRangeMaxRow(guess);
 		int rangeMinColumn = getRangeMinColumn(guess);
 		int rangeMaxColumn = getRangeMaxColumn(guess);
+		//loop through total counter to reset to 0
+		resetAffectedCellsToZero(opponentsWorld.total, rangeMinRow, rangeMaxRow, rangeMinColumn, rangeMaxColumn, guess);
+		//Set the state of the cell that was fired at to -1
+		opponentsWorld.total.ShipConfigurationCounts[guess.row][guess.column] = -1;
 		UpdateConfigurations(rangeMinRow, rangeMaxRow, rangeMinColumn, rangeMaxColumn, guess);
 	}
     
-    private void UpdateConfigurations(
+    public void UpdateConfigurations(
     		int rangeMinRow,
     		int rangeMaxRow,
     		int rangeMinColumn,
     		int rangeMaxColumn,
-    		Guess guess) {
-    	//loop through total counter to reset to 0
-    	resetAffectedCellsToZero(opponentsWorld.total, rangeMinRow, rangeMaxRow, rangeMinColumn, rangeMaxColumn, guess);
+    		Guess guess) { 	
     	for(ConfigurationCounter board: opponentsWorld.ShipCounters){ // for each shipCounter
     		// recalculate the count for each cell affected by the shot
-    		for(int x = rangeMinRow; x < guess.column; ++x){ // for each cell in the row below the shot 
-    			int configurations = getShipConfigurationCountForOneCell(x, board.shipSize, rangeMinRow, guess.column);
-    			board.ShipConfigurationCounts[guess.row][x] = configurations;
-    			opponentsWorld.total.ShipConfigurationCounts[guess.row][x] += configurations;
+    		for(int x = rangeMinRow; x < guess.column; ++x){ // for each cell below the shot in the row 
+    			int rowConfigurations = getShipConfigurationCountForOneCell(x, board.shipSize, rangeMinRow, guess.column);
+    			Guess g = new Guess();
+    			g.column = x;
+    			g.row = guess.row;
+    			int min = getRangeMinColumn(g);
+    			int max = getRangeMaxColumn(g);
+    			int colConfigurations = getShipConfigurationCountForOneCell(guess.row, board.shipSize, min, max);
+    			board.ShipConfigurationCounts[guess.row][x] = 0;
+    			board.ShipConfigurationCounts[guess.row][x] += rowConfigurations + colConfigurations;
+    			opponentsWorld.total.ShipConfigurationCounts[guess.row][x] += rowConfigurations + colConfigurations;
     		}
-    		for(int x = guess.column + 1; x < rangeMaxRow; ++x){ // for each cell in the row above the shot
-    			int configurations = getShipConfigurationCountForOneCell(x, board.shipSize, guess.column + 1, rangeMaxRow);
-    			board.ShipConfigurationCounts[guess.row][x] = configurations;
-    			opponentsWorld.total.ShipConfigurationCounts[guess.row][x] += configurations;
+    		for(int x = guess.column + 1; x < rangeMaxRow; ++x){ // for each cell above the shot in the row
+    			int rowConfigurations = getShipConfigurationCountForOneCell(x, board.shipSize, guess.column + 1, rangeMaxRow);
+    			Guess g = new Guess();
+    			g.column = x;
+    			g.row = guess.row;
+    			int min = getRangeMinColumn(g);
+    			int max = getRangeMaxColumn(g);
+    			int colConfigurations = getShipConfigurationCountForOneCell(guess.row, board.shipSize, min, max);
+    			board.ShipConfigurationCounts[guess.row][x] = 0;
+    			board.ShipConfigurationCounts[guess.row][x] += rowConfigurations + colConfigurations;
+    			opponentsWorld.total.ShipConfigurationCounts[guess.row][x] += rowConfigurations + colConfigurations;
     		}
-    		for(int y = rangeMinColumn; y < guess.row; ++y){ // for each cell in the column below the shot
-    			int configurations = getShipConfigurationCountForOneCell(y, board.shipSize, rangeMinColumn, guess.row);
-    			board.ShipConfigurationCounts[y][guess.column] += configurations;
-    			opponentsWorld.total.ShipConfigurationCounts[y][guess.column] += configurations;
+    		for(int y = rangeMinColumn; y < guess.row; ++y){ // for each cell below the shot in the column
+    			int colConfigurations = getShipConfigurationCountForOneCell(y, board.shipSize, rangeMinColumn, guess.row);
+    			Guess g = new Guess();
+    			g.column = guess.column;
+    			g.row = y;
+    			int min = getRangeMinRow(g);
+    			int max = getRangeMaxRow(g);
+    			int rowConfigurations = getShipConfigurationCountForOneCell(guess.column, board.shipSize, min, max);
+    			board.ShipConfigurationCounts[y][guess.column] = 0;
+    			board.ShipConfigurationCounts[y][guess.column] += colConfigurations + rowConfigurations;
+    			opponentsWorld.total.ShipConfigurationCounts[y][guess.column] += colConfigurations + rowConfigurations;
     		}
-    		for(int y = rangeMinColumn; y < rangeMaxColumn; ++y){ // for each cell in the column above the shot
-    			int configurations = getShipConfigurationCountForOneCell(y, board.shipSize, guess.row + 1, rangeMaxColumn);
-    			board.ShipConfigurationCounts[y][guess.column] += configurations;
-    			opponentsWorld.total.ShipConfigurationCounts[y][guess.column] += configurations;
+    		for(int y = guess.row + 1; y < rangeMaxColumn; ++y){ // for each cell above the shot in the column 
+    			int colConfigurations = getShipConfigurationCountForOneCell(y, board.shipSize, guess.row + 1, rangeMaxColumn);
+    			Guess g = new Guess();
+    			g.column = guess.column;
+    			g.row = y;
+    			int min = getRangeMinRow(g);
+    			int max = getRangeMaxRow(g);
+    			int rowConfigurations = getShipConfigurationCountForOneCell(guess.column, board.shipSize, min, max);
+    			board.ShipConfigurationCounts[y][guess.column] = 0;
+    			board.ShipConfigurationCounts[y][guess.column] += colConfigurations + rowConfigurations;
+    			opponentsWorld.total.ShipConfigurationCounts[y][guess.column] += colConfigurations + rowConfigurations;
     		}
     	}	
     }// end of UpdateConfigurations()
     
-    private void resetAffectedCellsToZero(
+    public void resetAffectedCellsToZero(
 			ConfigurationCounter total, 
 			int rangeMinRow, 
 			int rangeMaxRow,
@@ -157,39 +190,38 @@ public class MonteCarloGuessPlayer extends Guesser implements Player{
 		for(int y = rangeMinColumn; y < rangeMaxColumn; ++y){
 			total.ShipConfigurationCounts[y][guess.column] = 0;
 		}
-		//The state of the cell that was fired at will have been overwritten with a zero
-		//Set it to -1 again here
-		opponentsWorld.total.ShipConfigurationCounts[guess.row][guess.column] = -1;
 	}// end of resetAffectedCellsToZero()
 
-	private int getRangeMaxColumn(Guess guess) {
+    public int getRangeMaxColumn(Guess guess) {
 		for(int y = guess.row; y < opponentsWorld.numRows; ++y){
-			if(opponentsWorld.total.ShipConfigurationCounts[guess.row][y] == -1)
-				return opponentsWorld.total.ShipConfigurationCounts[guess.row][y];
+			if(opponentsWorld.total.ShipConfigurationCounts[y][guess.column] == -1) {
+				return y;
+			}
+				
 		}
-		return 0;
+		return opponentsWorld.numRows;
 	}
 
-	private int getRangeMinColumn(Guess guess) {
+	public int getRangeMinColumn(Guess guess) {
 		for(int y = guess.row; y >= BOARD_EDGE; --y){
 			if(opponentsWorld.total.ShipConfigurationCounts[y][guess.column] == -1)
-				return opponentsWorld.total.ShipConfigurationCounts[y][guess.column];
+				return y;
 		}
 		return 0;
 	}
 
-	private int getRangeMaxRow(Guess guess) {
+	public int getRangeMaxRow(Guess guess) {
 		for(int x = guess.column; x < opponentsWorld.numColumns; ++x){
 			if(opponentsWorld.total.ShipConfigurationCounts[guess.row][x] == -1)
-				return opponentsWorld.total.ShipConfigurationCounts[guess.row][x];
+				return x;
 		}
 		return opponentsWorld.numColumns;
 	}
 
-	private int getRangeMinRow(Guess guess) {
+	public int getRangeMinRow(Guess guess) {
 		for(int x = guess.column; x >= BOARD_EDGE; --x){
 			if(opponentsWorld.total.ShipConfigurationCounts[guess.row][x] == -1)
-				return opponentsWorld.total.ShipConfigurationCounts[guess.row][x];
+				return x;
 		}
 		return 0;
 	}

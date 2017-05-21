@@ -21,7 +21,7 @@ public class OppWorld {
 	 *   the checking process. The list below is to allow quick access without 
 	 *   searching through the 2D array for every guess
 	 */
-	public ArrayList<Coordinate> possibleTargets = new ArrayList<>();
+	public List<Coordinate> possibleTargets = new ArrayList<>();
 	
 	// 2d Arrays representing the opponents world
 	public cellState[][] oppWorld = null; 
@@ -79,7 +79,6 @@ public class OppWorld {
 		{
 			calculatePossibles( row, column );
 		}
-		printWorld( );
 	}
 	
 	// Checks the state of the cells above, below, left and right of the target cell
@@ -122,6 +121,16 @@ public class OppWorld {
 		// If the cell is already marked as hit or miss or possible, then it is ignored
 	}
 	
+	public void printBoard(int[][] board) {
+		for(int x = 0; x < 10; ++x){
+			for(int y = 0; y < 10; ++y) {
+				System.out.format("%02d ", board[x][y]);
+			}
+			System.out.println();
+		}
+		System.out.println();
+		
+	}
 	
     public void printWorld( )
     {
