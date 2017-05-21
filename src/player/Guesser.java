@@ -13,7 +13,6 @@ public abstract class Guesser implements Player{
 	
 	private static final int NUMBER_OF_VULNERABLE_COORDINATES = 17;
     public World myWorld;
-//    public OtherWorld opponentsWorld;
     public OppWorld opponentsWorld;
     public List<Guess> hitsToMyFleet;
 
