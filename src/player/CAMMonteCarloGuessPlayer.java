@@ -80,7 +80,6 @@ public class CAMMonteCarloGuessPlayer extends Guesser implements Player{
 
 		while ( finish < board.columns )
 		{
-			
 			if ( vertical ) {
 				finish = checkAbove( x, coord+1, board.rows );
 //				finish = checkDirection( x, y, coord, board.rows, 0, 1 );
@@ -197,10 +196,11 @@ public class CAMMonteCarloGuessPlayer extends Guesser implements Player{
     
     void updateCount( Guess guess ) {
     	// Set the shot Coordinate on the totals board to be -1
-    	opponentsWorld.total.ShipConfigurationCounts[guess.column][guess.row] = -1;
+    	opponentsWorld.total.ShipConfigurationCounts[guess.row][guess.column] = -1;
     	// Set the shot Coordinate on each of the boards to be -1
     	for(ConfigurationCounter board: opponentsWorld.ShipCounters){ // for each counter
-    		board.ShipConfigurationCounts[guess.column][guess.row] = -1;
+    		board.ShipConfigurationCounts[guess.row][guess.column] = -1;
+    		
     	}
     	
     	countAllConfigurations(opponentsWorld.ShipCounters, opponentsWorld.total);
