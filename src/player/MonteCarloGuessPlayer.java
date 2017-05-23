@@ -21,7 +21,6 @@ public class MonteCarloGuessPlayer extends Guesser implements Player{
 	public static final int BOARD_EDGE = 0;
 	public static final int CURRENT_CONFIGURATION = 1;
 	public static final int INCLUSIVE_EXTRA_CELL = 1;
-	public static final int LARGEST_SHIP_SIZE = 5;
 
 	@Override
 	public void initialisePlayer(World world) {
@@ -126,7 +125,6 @@ public class MonteCarloGuessPlayer extends Guesser implements Player{
 				}
 			}
 		}
-//		System.out.println("Making a hunting guess at: " + g.row + ", " + g.column);
 		return g;
 	} // end of makeGuess()
 
@@ -157,8 +155,8 @@ public class MonteCarloGuessPlayer extends Guesser implements Player{
 	public void updateConfigurationCount(Guess guess) {
 		//for each shipCounter
 		for(ConfigurationCounter shipCounter: opponentsWorld.ShipCounters){
-			//set shot to -1
-			shipCounter.ShipConfigurationCounts[guess.column][guess.row] = -1;
+			//set shot to zero
+			shipCounter.ShipConfigurationCounts[guess.row][guess.column] = 0;
 			// travel each direction to update counts
 			updateRowUpper(guess, shipCounter);
 			updateRowLower(guess, shipCounter);
