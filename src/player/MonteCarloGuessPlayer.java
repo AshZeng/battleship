@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import ship.Ship;
 import world.ConfigurationCounter;
 import world.OppWorld;
 import world.World;
@@ -21,13 +22,17 @@ public class MonteCarloGuessPlayer extends Guesser implements Player{
 	public static final int BOARD_EDGE = 0;
 	public static final int CURRENT_CONFIGURATION = 1;
 	public static final int INCLUSIVE_EXTRA_CELL = 1;
-
+	public List<Ship> ships;
+	public int opponentHitCount;
+	
 	@Override
 	public void initialisePlayer(World world) {
 		this.myWorld = world;
 		this.opponentsWorld = new OppWorld( world.numRow, world.numColumn, true );
 		this.hitsToMyFleet = new ArrayList<>();
+		this.ships = new ArrayList<>();
 		this.opponentsWorld.initialiseShipCounters();
+		this.opponentHitCount = 0;
 		initialiseTotalCountToZero(opponentsWorld.total);
 		setupAllConfigurations(opponentsWorld.ShipCounters, opponentsWorld.total);
 	} // end of initialisePlayer()
@@ -107,11 +112,12 @@ public class MonteCarloGuessPlayer extends Guesser implements Player{
 		opponentsWorld.printBoard(opponentsWorld.total.ShipConfigurationCounts);
 		//if there are hits and not all surrounding cells have been fired at
 		// **Targeting Mode
-//		if (opponentsWorld.possibleTargets.size() > 0){
-//			Guess gs = this.createGuess(opponentsWorld.possibleTargets.remove(0));
-//			System.out.println("Making a guess targeted at: " + gs.row + ", " + gs.column);
-//			return gs;
-//		}
+		System.out.print(getTotalSunkShipSize() + " < ");
+		System.out.println(opponentHitCount);
+		System.out.println("size of options" + opponentsWorld.possibleTargets.size());
+		
+		if (getTotalSunkShipSize() < opponentHitCount && !opponentsWorld.possibleTargets.isEmpty())
+			return getPossibleTargetWithHighestCount();
 		// **Hunting Mode**
 		int highestCount = 0;
 		Guess g = new Guess();
@@ -127,15 +133,43 @@ public class MonteCarloGuessPlayer extends Guesser implements Player{
 		}
 		return g;
 	} // end of makeGuess()
+	
+	public Guess getPossibleTargetWithHighestCount(){
+		int highestCount = 0;
+		//initialise the coordinate to the first element in the list to guarantee return value
+		Coordinate largest = opponentsWorld.possibleTargets.get(0);
+		//find the coordinate with the largest count
+		for(Coordinate c: opponentsWorld.possibleTargets){
+			if(opponentsWorld.total.ShipConfigurationCounts[c.row][c.column] > highestCount){
+				largest = c;
+				highestCount = opponentsWorld.total.ShipConfigurationCounts[c.row][c.column];
+			}
+		}
+		// remove it from the list
+		opponentsWorld.possibleTargets.remove(largest);
+		// return it as a guess object
+		return createGuess(largest);
+	}
+	
+	public int getTotalSunkShipSize(){
+		int totalSize = 0;
+		for (Ship s: ships)
+			totalSize += s.len();
+		return totalSize;
+	}
 
 	@Override
 	public void update(Guess guess, Answer answer) {
-		if(answer.isHit)
+		if(answer.isHit){
 			opponentsWorld.updateCell ( cellState.Hit, guess.row, guess.column );
+			opponentHitCount++;
+		}
 		else
 			opponentsWorld.updateCell ( cellState.Miss, guess.row, guess.column );
 		updateConfigurationCount(guess);
 		recalculateTotalCount();
+		if(answer.shipSunk != null)
+			this.ships.add(answer.shipSunk);
 	}
 
 	public void recalculateTotalCount() {
