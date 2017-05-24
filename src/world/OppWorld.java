@@ -121,8 +121,17 @@ public class OppWorld {
 		// If the cell is already marked as hit or miss or possible, then it is ignored
 	}
 	
+	public void resetAllPossibleTargets(){
+		for (int j = numRows - 1; j >= 0; j--){
+			for (int i = 0; i < numColumns; i++){
+				if(oppWorld[j][i] == cellState.Possible)
+					oppWorld[j][i] = cellState.Untested;
+			}
+		}
+	}
+	
 	public void printBoard(int[][] board) {
-		for(int x = 0; x < 10; ++x){
+		for(int x = numRows - 1; x>=0; --x){
 			for(int y = 0; y < 10; ++y) {
 				System.out.format("%02d ", board[x][y]);
 			}
