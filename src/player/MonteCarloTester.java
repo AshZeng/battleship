@@ -69,9 +69,6 @@ public class MonteCarloTester {
 		Coordinate co = w.new Coordinate();
 		co.row = 2;
 		co.column = 8;
-		Coordinate coa = w.new Coordinate();
-		coa.row = 7;
-		coa.column = 7;
 		Guess gs = new Guess();
 		gs.row = 3;
 		gs.column = 3;
