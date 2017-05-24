@@ -109,13 +109,9 @@ public class MonteCarloGuessPlayer extends Guesser implements Player{
 	@Override
 	public Guess makeGuess() {
 		//Print the board for Debug
-		opponentsWorld.printBoard(opponentsWorld.total.ShipConfigurationCounts);
+//		opponentsWorld.printBoard(opponentsWorld.total.ShipConfigurationCounts);
 		//if there are hits and not all surrounding cells have been fired at
 		// **Targeting Mode
-		System.out.print(getTotalSunkShipSize() + " < ");
-		System.out.println(opponentHitCount);
-		System.out.println("size of options" + opponentsWorld.possibleTargets.size());
-		
 		if (getTotalSunkShipSize() < opponentHitCount && !opponentsWorld.possibleTargets.isEmpty())
 			return getPossibleTargetWithHighestCount();
 		// **Hunting Mode**
@@ -171,7 +167,6 @@ public class MonteCarloGuessPlayer extends Guesser implements Player{
 		updateConfigurationCount(guess);
 		recalculateTotalCount();
 		if(answer.shipSunk != null){
-			System.out.println("Should be here  !!!!!!     SUNK " + answer.shipSunk.name());
 			this.ships.add(answer.shipSunk);
 		}
 	}
