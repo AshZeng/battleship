@@ -22,7 +22,6 @@ public abstract class Guesser implements Player{
         //check if the guess hits the fleet
         if(guessIsAccurate(guess, answer)){
         	answer.isHit = true;
-            hitsToMyFleet.add(guess);
         }
         else
         	answer.isHit = false;
@@ -35,6 +34,7 @@ public abstract class Guesser implements Player{
     		// Iterate over the coordinates of each ship
     		for(Coordinate c: ship.coordinates) {
     			if(sameAs(c, guess)){ //guess is a hit
+    				hitsToMyFleet.add(guess);
 					// if ship is sunk altogether
 					if(updateShipSunkStatus(ship))
 						answer.shipSunk = ship.ship;
@@ -45,13 +45,14 @@ public abstract class Guesser implements Player{
 		return false;
 	}
 
-	private boolean updateShipSunkStatus(ShipLocation ship) {
+	public boolean updateShipSunkStatus(ShipLocation ship) {
 		boolean shipSunk = true;
 		// Iterate over the coordinates of the ship
 		for(Coordinate c: ship.coordinates) {
 			// if at least one part of ship hasn't been hit
-			if(notContainedInGuessList(c, hitsToMyFleet))
+			if(notContainedInGuessList(c, hitsToMyFleet)){
 				shipSunk = false;
+			}
 		}
 		return shipSunk;
 	}
