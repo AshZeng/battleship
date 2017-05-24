@@ -46,15 +46,23 @@ public class CAMMonteCarloGuessPlayer extends Guesser implements Player{
 		this.opponentsWorld.initialiseShipCounters();
 		this.opponentHitCount = 0;
 		
-		currentDirection.row = -2;
-		currentDirection.column = -2;
-		nextTarget.row = -2;
-		nextTarget.column = -2;
+		resetTargetVariables();
 		
 		initialiseTotalCountToZero(opponentsWorld.total);
 		setupAllConfigurations(opponentsWorld.ShipCounters, opponentsWorld.total);
 	} // end of initialisePlayer()
 
+	private void resetTargetVariables() {
+		originalHit.row = -2;
+		originalHit.column = -2;
+		currentDirection.row = -2;
+		currentDirection.column = -2;
+		nextTarget.row = -2;
+		nextTarget.column = -2;
+	}
+	
+	
+	
 	public void initialiseTotalCountToZero(ConfigurationCounter board){
 		for(int y = 0; y < board.rows; ++y){ // for each row
 			for(int x = 0; x < board.columns; ++x){ // for each column
@@ -130,22 +138,9 @@ public class CAMMonteCarloGuessPlayer extends Guesser implements Player{
 //		opponentsWorld.printBoard(opponentsWorld.total.ShipConfigurationCounts);
 		//if there are hits and not all surrounding cells have been fired at
 		// **Targeting Mode
-		
-		// If a Ship has been hit, but not sunk
-//		if (getTotalSunkShipSize() < opponentHitCount && !opponentsWorld.possibleTargets.isEmpty())
-//			return getPossibleTargetWithHighestCount();
-//		if( nextTarget.row != -2 ) {
-//			Guess g = new Guess();
-//			g.column = nextTarget.column;
-//			g.row = nextTarget.row;
-//			nextTarget.column = -2;
-//			nextTarget.row = -2;			
-//			return g;
-//		}
 		if ( targetingMode ) {
 			return nextTarget;
 		}
-		
 		
 		// **Hunting Mode**
 		if(getTotalSunkShipSize() == opponentHitCount)
@@ -195,7 +190,15 @@ public class CAMMonteCarloGuessPlayer extends Guesser implements Player{
 			opponentsWorld.updateCell ( cellState.Hit, guess.row, guess.column );
 			opponentHitCount++;
 			
-			targetingComputer( guess );
+			// If a ship has been sunk
+			if(answer.shipSunk != null){
+				this.ships.add(answer.shipSunk);
+				targetingMode = false;
+				// Clear the originalHit variable
+				resetTargetVariables();
+			}
+			else 
+				targetingComputer( guess );
 		}
 		else {
 			opponentsWorld.updateCell ( cellState.Miss, guess.row, guess.column );
@@ -203,23 +206,18 @@ public class CAMMonteCarloGuessPlayer extends Guesser implements Player{
 			if ( targetingMode ) {
 				currentDirection.row *= -1;
 				currentDirection.column *= -1;
-				targetingComputer( guess ); 
+				nextTarget.row = originalHit.row + currentDirection.row;
+				nextTarget.column = originalHit.column + currentDirection.column;
+				// If this cell has already been shot at
+				if ( opponentsWorld.total.ShipConfigurationCounts[nextTarget.column][nextTarget.row] < 1 ) {
+					currentDirection.row = -2;
+					targetingComputer( guess );
+				}
 			}
 		}
 		
 		updateConfigurationCount(guess);
 		recalculateTotalCount();
-		
-		// If a ship has been sunk
-		if(answer.shipSunk != null){
-			this.ships.add(answer.shipSunk);
-			targetingMode = false;
-			// Clear the originalHit variable
-			originalHit.row = -2;
-			originalHit.column = -2;
-			currentDirection.row = -2;
-			currentDirection.column = -2;
-		}
 	}
 
 	
