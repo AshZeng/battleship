@@ -119,6 +119,8 @@ public class MonteCarloGuessPlayer extends Guesser implements Player{
 		if (getTotalSunkShipSize() < opponentHitCount && !opponentsWorld.possibleTargets.isEmpty())
 			return getPossibleTargetWithHighestCount();
 		// **Hunting Mode**
+		if(getTotalSunkShipSize() == opponentHitCount)
+			opponentsWorld.possibleTargets.clear();
 		int highestCount = 0;
 		Guess g = new Guess();
 		for(int y = 0; y < opponentsWorld.numRows; ++y){ //for each row
@@ -168,8 +170,10 @@ public class MonteCarloGuessPlayer extends Guesser implements Player{
 			opponentsWorld.updateCell ( cellState.Miss, guess.row, guess.column );
 		updateConfigurationCount(guess);
 		recalculateTotalCount();
-		if(answer.shipSunk != null)
+		if(answer.shipSunk != null){
+			System.out.println("Should be here  !!!!!!     SUNK " + answer.shipSunk.name());
 			this.ships.add(answer.shipSunk);
+		}
 	}
 
 	public void recalculateTotalCount() {
