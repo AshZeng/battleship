@@ -8,6 +8,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import world.*;
+import ship.*;
 import world.OppWorld.cellState;
 import world.World.Coordinate;
 
