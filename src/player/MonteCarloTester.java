@@ -1,10 +1,15 @@
 package player;
 
 import static org.junit.Assert.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import world.*;
 import world.OppWorld.cellState;
+import world.World.Coordinate;
 
 public class MonteCarloTester {
 	
@@ -42,6 +47,61 @@ public class MonteCarloTester {
 		System.out.println();
 		assertTrue(true);
 	}
+	
+	@Test
+	public void notContainedInGuessList1(){
+		Coordinate co = w.new Coordinate();
+		co.row = 3;
+		co.column = 3;
+		Coordinate coa = w.new Coordinate();
+		coa.row = 1;
+		coa.column = 6;
+		Guess gs = new Guess();
+		gs.row = 3;
+		gs.column = 3;
+		List<Guess> list = new ArrayList<>();
+		list.add(gs);
+		assertFalse(m.notContainedInGuessList(co, list));
+	}
+	
+	@Test
+	public void notContainedInGuessList2(){
+		Coordinate co = w.new Coordinate();
+		co.row = 2;
+		co.column = 8;
+		Coordinate coa = w.new Coordinate();
+		coa.row = 7;
+		coa.column = 7;
+		Guess gs = new Guess();
+		gs.row = 3;
+		gs.column = 3;
+		List<Guess> list = new ArrayList<>();
+		list.add(gs);
+		assertTrue(m.notContainedInGuessList(co, list));
+	}
+	
+	@Test
+	public void sameAs1(){
+		Coordinate co = w.new Coordinate();
+		Guess gs = new Guess();
+		co.row = 3;
+		co.column = 3;
+		gs.row = 3;
+		gs.column = 3;
+		assertTrue(m.sameAs(co, gs));
+	}
+	
+	@Test
+	public void sameAs2(){
+		Coordinate co = w.new Coordinate();
+		Guess gs = new Guess();
+		co.row = 5;
+		co.column = 5;
+		gs.row = 1;
+		gs.column = 3;
+		assertFalse(m.sameAs(co, gs));
+	}
+	
 	@Test
 	public void getShipConfigurationCountForOneCell1(){
 		assertTrue(m.getShipConfigurationCountForOneCell(0, 0, 4) == 2);
