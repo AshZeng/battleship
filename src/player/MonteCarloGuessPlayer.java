@@ -2,9 +2,7 @@ package player;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
-import ship.Ship;
 import world.ConfigurationCounter;
 import world.OppWorld;
 import world.World;
