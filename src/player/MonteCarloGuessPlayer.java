@@ -23,6 +23,9 @@ public class MonteCarloGuessPlayer extends Guesser implements Player{
 	public static final int CURRENT_CONFIGURATION = 1;
 	public static final int INCLUSIVE_EXTRA_CELL = 1;
 	public boolean hitButNotSunk;
+	public Guess firstHit;
+	public int directionLength;
+	public Direction direction;
 	
 	@Override
 	public void initialisePlayer(World world) {
@@ -31,6 +34,8 @@ public class MonteCarloGuessPlayer extends Guesser implements Player{
 		this.hitsToMyFleet = new ArrayList<>();
 		this.opponentsWorld.initialiseShipCounters();
 		this.hitButNotSunk = false;
+		this.direction = Direction.NORTH;
+		this.directionLength = 1;
 		initialiseTotalCountToZero(opponentsWorld.total);
 		setupAllConfigurations(opponentsWorld.ShipCounters, opponentsWorld.total);
 	} // end of initialisePlayer()
@@ -106,18 +111,28 @@ public class MonteCarloGuessPlayer extends Guesser implements Player{
 
 	@Override
 	public Guess makeGuess() {
-		//if there are hits and not all surrounding cells have been fired at
+		Guess g = null;
 		// **Targeting Mode
-		if (hitButNotSunk)
-			return getPossibleTargetWithHighestCount();
+		if (hitButNotSunk){
+			while(g == null){ // each loop represents a direction
+				g = getNextTarget(this.firstHit); //go in one direction for the next guess
+				directionLength++; // increment for the next guess 
+				// if that direction is a dead end
+				if(g == null || isOutOfBounds(g.row, g.column) || isObstacle(g.row, g.column)){
+					g = null;
+					direction = direction.next();
+					directionLength = 1;
+				}
+			}
+		}
 		// **Hunting Mode**
 		else{
+			g = new Guess();
 			//clear the possible targets from the last ship
 			opponentsWorld.possibleTargets.clear(); 
 			opponentsWorld.resetAllPossibleTargets();
 			// look for the cell with the highest configuration count
 			int highestCount = 0;
-			Guess g = new Guess();
 			for(int y = 0; y < opponentsWorld.numRows; ++y){ //for each row
 				for(int x = 0; x < opponentsWorld.numColumns; ++x){ // for each column
 					// if it is a higher number, make it the new guess
@@ -128,10 +143,31 @@ public class MonteCarloGuessPlayer extends Guesser implements Player{
 					}
 				}
 			}
-			return g;
 		}
+		return g;
 	} // end of makeGuess()
 	
+	public Guess getNextTarget(Guess centre) {
+		Guess g = new Guess();
+		g.column = centre.column;
+		g.row = centre.row;
+		switch(direction){
+			case NORTH:
+				g.row = g.row + directionLength;
+				break;
+			case EAST:
+				g.column = g.column + directionLength;
+				break;
+			case WEST:
+				g.column = g.column - directionLength;
+				break;
+			case SOUTH:
+				g.row = g.row - directionLength;
+				break;
+		}
+		return g;
+	}
+
 	public Guess getPossibleTargetWithHighestCount(){
 		int highestCount = 0;
 		//initialise the coordinate to the first element in the list to guarantee return value
@@ -153,14 +189,24 @@ public class MonteCarloGuessPlayer extends Guesser implements Player{
 	public void update(Guess guess, Answer answer) {
 		// Check actions for a hit
 		if(answer.isHit){
+			if(firstHit == null){
+				firstHit = guess;
+			}
 			opponentsWorld.updateCell ( cellState.Hit, guess.row, guess.column );
 			hitButNotSunk = true;
 			if(answer.shipSunk != null){
+				firstHit = null;
 				hitButNotSunk = false;
+				directionLength = 1;
 			}
 		}
-		else
+		else{
+			if(hitButNotSunk){
+				direction = direction.next();
+				directionLength = 1;
+			}
 			opponentsWorld.updateCell ( cellState.Miss, guess.row, guess.column );
+		}
 		
 		// Check actions if is ship sunk
 		updateConfigurationCount(guess);

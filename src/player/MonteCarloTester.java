@@ -50,6 +50,29 @@ public class MonteCarloTester {
 	}
 	
 	@Test
+	public void getNextTarget1(){
+		Guess centre = new Guess();
+		centre.column = 5;
+		centre.row = 2;
+		Guess g = m.getNextTarget(centre);
+		assertTrue(g.column == 5 && g.row == 3);
+	}
+	
+	@Test
+	public void next1(){
+		Direction d = Direction.NORTH;
+		d = d.next();
+		assertTrue(d == Direction.SOUTH);
+	}
+	
+	@Test
+	public void next2(){
+		Direction d = Direction.WEST;
+		d = d.next();
+		assertTrue(d == Direction.NORTH);
+	}
+	
+	@Test
 	public void notContainedInGuessList1(){
 		Coordinate co = w.new Coordinate();
 		co.row = 3;
